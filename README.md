@@ -145,6 +145,9 @@ The graph lives in CSR typed arrays, so a search over about 50k intersections ta
 npm test             # Node 20+
 ```
 
+<p align="center"><img src="docs/tests.svg" alt="Animated terminal: npm test runs 9 tests, including optimal algorithms agreeing on generated cities, all passing" width="820"></p>
+<p align="center"><sub>Recorded with <a href="https://github.com/BlazeXYZ/termreel">termreel</a> from <a href="docs/tests.reel"><code>docs/tests.reel</code></a>.</sub></p>
+
 9 tests in [`tests/algorithms.test.mjs`](tests/algorithms.test.mjs) check:
 
 - heap ordering
