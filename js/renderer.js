@@ -3,8 +3,8 @@
 // animates; the whole canvas is rebuilt only when the map moves or zooms.
 /* global L */
 
-const NETWORK = "rgba(148, 163, 184, 0.16)";
-const PATH = "#fde047";
+const NETWORK = "rgba(219, 148, 237, 0.15)";
+const PATH = "#f6dcff";
 
 export class TraceRenderer {
   constructor(map) {

@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pathfinder Playground</title>
   <meta name="description" content="Race Dijkstra, A*, bidirectional search and more on real OpenStreetMap streets, side by side." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230b1220'/><path d='M7 24 L13 14 L19 18 L25 8' stroke='%23fde047' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/><circle cx='7' cy='24' r='3' fill='%2334d399'/><circle cx='25' cy='8' r='3' fill='%23fb7185'/></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a070d'/><path d='M7 24 L13 14 L19 18 L25 8' stroke='%23db94ed' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/><circle cx='7' cy='24' r='3' fill='%2334d399'/><circle cx='25' cy='8' r='3' fill='%23fb7185'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Mono:wght@300;400;500&family=Montserrat:wght@300&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#0a070d" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="bz-theme.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <div class="bz-hud" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="app">
     <aside class="sidebar">
+      <a class="bz-home" href="https://blazexyz.com">blazexyz.com</a>
       <header class="brand">
         <div class="logo" aria-hidden="true">
           <svg viewBox="0 0 32 32"><path d="M7 24 L13 14 L19 18 L25 8" /><circle cx="7" cy="24" r="3" class="a" /><circle cx="25" cy="8" r="3" class="b" /></svg>
