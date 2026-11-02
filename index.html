@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pathfinder Playground</title>
+  <meta name="description" content="Race Dijkstra, A*, bidirectional search and more on real OpenStreetMap streets, side by side." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230b1220'/><path d='M7 24 L13 14 L19 18 L25 8' stroke='%23fde047' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/><circle cx='7' cy='24' r='3' fill='%2334d399'/><circle cx='25' cy='8' r='3' fill='%23fb7185'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <header class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M7 24 L13 14 L19 18 L25 8" /><circle cx="7" cy="24" r="3" class="a" /><circle cx="25" cy="8" r="3" class="b" /></svg>
+        </div>
+        <div>
+          <h1>Pathfinder Playground</h1>
+          <p>Race shortest-path algorithms on real streets.</p>
+        </div>
+      </header>
+
+      <section class="card">
+        <form id="search-form" class="search" autocomplete="off">
+          <input id="search-input" type="search" placeholder="Search a city or neighborhood…" aria-label="Search for a place" />
+          <button type="submit" class="btn icon" aria-label="Search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          </button>
+          <ul id="search-results" class="search-results" hidden></ul>
+        </form>
+        <div class="chips" id="presets"></div>
+        <button id="load-btn" class="btn primary wide">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
+          Load streets in view
+        </button>
+        <div class="status" id="status" aria-live="polite">No streets loaded yet.</div>
+      </section>
+
+      <section class="card">
+        <div class="row">
+          <span class="label">Travel mode</span>
+          <div class="seg" id="mode-seg">
+            <button data-value="drive" class="on">Drive</button>
+            <button data-value="walk">Walk</button>
+          </div>
+        </div>
+        <div class="row">
+          <span class="label">Optimize for</span>
+          <div class="seg" id="cost-seg">
+            <button data-value="distance" class="on">Distance</button>
+            <button data-value="time">Time</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Algorithms</h2>
+          <span class="hint" id="algo-count">pick up to 4</span>
+        </div>
+        <ul class="algos" id="algo-list"></ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2>Playback</h2><span class="hint"><kbd>Space</kbd> <kbd>R</kbd> <kbd>F</kbd></span></div>
+        <div class="controls">
+          <button id="play-btn" class="btn primary" title="Play / pause (Space)">
+            <svg viewBox="0 0 24 24" class="i-play"><path d="M7 5v14l12-7z" /></svg>
+            <svg viewBox="0 0 24 24" class="i-pause"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+            <span>Play</span>
+          </button>
+          <button id="restart-btn" class="btn" title="Restart (R)">
+            <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4" /></svg>
+          </button>
+          <button id="finish-btn" class="btn" title="Finish instantly (F)">
+            <svg viewBox="0 0 24 24"><path d="M5 5l8 7-8 7zM13 5l8 7-8 7z" /></svg>
+          </button>
+        </div>
+        <label class="slider">
+          <span class="label">Speed <output id="speed-out"></output></span>
+          <input id="speed" type="range" min="0" max="100" value="45" />
+        </label>
+      </section>
+
+      <section class="card results-card">
+        <div class="card-head"><h2>Results</h2><button id="share-btn" class="btn small">Copy link</button></div>
+        <div class="table-wrap">
+          <table class="results">
+            <thead><tr><th>Algorithm</th><th title="Nodes settled">Explored</th><th>Route</th><th title="Compared with the optimal route">vs best</th><th title="Pure compute time">Time</th></tr></thead>
+            <tbody id="results-body"><tr><td colspan="5" class="empty">Pick a start and a goal on the map.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <p><strong>Click</strong> to set the goal · <strong>Shift + click</strong> (or right-click) to set the start · drag the pins.</p>
+        <p>Map data © OpenStreetMap contributors via the Overpass API.</p>
+      </footer>
+    </aside>
+
+    <main class="stage" id="stage"></main>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <template id="pane-template">
+    <div class="pane">
+      <div class="map"></div>
+      <div class="hud">
+        <div class="hud-title"><span class="dot"></span><span class="name"></span><span class="rank"></span></div>
+        <div class="hud-stats">
+          <span><b class="explored">0</b> explored</span>
+          <span><b class="distance">—</b></span>
+          <span class="delta"></span>
+        </div>
+        <div class="bar"><div></div></div>
+      </div>
+    </div>
+  </template>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
